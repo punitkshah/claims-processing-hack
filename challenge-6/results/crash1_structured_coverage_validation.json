@@ -1,0 +1,37 @@
+{
+  "coverage_decision": "DENIED",
+  "policy_type": "Liability Only Auto Insurance",
+  "policy_number": "LIAB-AUTO-001",
+  "applicable_coverage": "None",
+  "deductible": "N/A",
+  "coverage_limit": "N/A",
+  "reasoning": "The policy is a liability-only auto insurance policy that explicitly does not cover collision damage to the policyholder's own vehicle. The claim involves damage to John Peterson's own 2004 Honda Accord caused by another vehicle while parked. According to the policy's key exclusions, collision damage to the insured's own vehicle is excluded. The coverage summary confirms that own vehicle collision and comprehensive damages are not covered. Therefore, this claim for repair expenses to the policyholder's vehicle is denied as it falls outside the scope of the policy's coverage.",
+  "exclusions_checked": [
+    "Collision damage to your vehicle",
+    "Comprehensive damage (theft, vandalism, weather)",
+    "Damage while racing or in competitions",
+    "Intentional damage caused by you",
+    "Damage while using vehicle for business purposes",
+    "Damage while driving under the influence"
+  ],
+  "exclusions_triggered": [
+    "Collision damage to your vehicle"
+  ],
+  "recommendations": "Inform the claimant that their liability-only policy does not cover damage to their own vehicle. Recommend reviewing options for collision or comprehensive coverage for future protection. If the other driver is at fault, the claimant may pursue a claim against the other driver's insurance for property damage.",
+  "confidence": "high",
+  "status": "success",
+  "timestamp": "2026-06-19T16:28:03.642728",
+  "claim_summary": {
+    "policy_number": "LIAB-AUTO-001",
+    "policy_holder_name": "John Peterson",
+    "vehicle_year_make_model": "2004 Honda Accord",
+    "vehicle_color": "Silver",
+    "vehicle_vin": "1HGCM56404A123456",
+    "incident_date": "July 17, 2025",
+    "incident_time": "8:30 AM",
+    "incident_location": "Parking lot, 2325 Main Street, Springfield, OH 45503",
+    "incident_description": "Vehicle legally parked in marked space. Gray pickup truck attempting to park beside struck the front end and driver's side of vehicle causing significant damage. Other driver left information and waited for police.",
+    "damage_description": "Front bumper dislodged and partially detached; severe denting and scraping on driver's side front quarter panel; wheel and tire on driver's side front damaged; paint transfer and deformity on the driver's door; headlamp assembly and grille potentially damaged; possible hidden damage to mechanical components behind the bumper",
+    "claim_request": "Full coverage of repair expenses minus deductible"
+  }
+}

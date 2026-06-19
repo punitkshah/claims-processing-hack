@@ -1,0 +1,45 @@
+{
+  "policy_match": {
+    "policy_number": "LIAB-AUTO-001",
+    "policy_name": "Liability Only Auto Insurance",
+    "policy_type": "liability_only",
+    "match_confidence": "high"
+  },
+  "coverage_summary": {
+    "covers_own_vehicle_collision": false,
+    "covers_own_vehicle_comprehensive": false,
+    "covers_liability_bodily_injury": true,
+    "covers_liability_property_damage": true,
+    "covers_medical_payments": false,
+    "covers_uninsured_motorist": false,
+    "covers_rental_car": false,
+    "covers_roadside_assistance": false,
+    "covers_towing": false
+  },
+  "limits": {
+    "collision_limit": "N/A",
+    "comprehensive_limit": "N/A",
+    "bodily_injury_per_person": "$25,000",
+    "bodily_injury_per_accident": "$50,000",
+    "property_damage_per_accident": "$25,000",
+    "medical_payments_per_person": "N/A"
+  },
+  "deductibles": {
+    "collision_deductible": "N/A",
+    "comprehensive_deductible": "N/A"
+  },
+  "key_exclusions": [
+    "Collision damage to your vehicle",
+    "Comprehensive damage (theft, vandalism, weather)",
+    "Medical expenses for you or your passengers",
+    "Damage while racing or in competitions",
+    "Intentional damage caused by you",
+    "Damage while using vehicle for business purposes",
+    "Damage while driving under the influence"
+  ],
+  "own_vehicle_damage_covered": false,
+  "notes": "Liability-only policy: covers only damage/injury you cause to OTHERS. Does NOT cover any damage to the policyholder's own vehicle.",
+  "status": "success",
+  "source": "fallback_mapping",
+  "timestamp": "2026-06-19T16:28:16.742869"
+}

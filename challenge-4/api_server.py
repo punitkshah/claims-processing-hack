@@ -26,8 +26,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
+USERNAME = os.environ.get("USERNAME", "").strip()
+API_TITLE = f"{USERNAME} - Claims Processing API" if USERNAME else "Claims Processing API"
 app = FastAPI(
-    title="Claims Processing API",
+    title=API_TITLE,
     description="Multi-agent workflow for processing insurance claim images",
     version="1.0.0"
 )

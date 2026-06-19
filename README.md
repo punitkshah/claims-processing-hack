@@ -67,6 +67,66 @@ To successfully complete this hackathon, you will need the following:
 - Ability to provision resources in **Sweden Central** or [another supported region](https://learn.microsoft.com/en-us/azure/ai-foundry/openai/concepts/models?tabs=global-standard%2Cstandard-chat-completions#global-standard-model-availability). 
 
 
+## Local Setup Requirements
+
+> The recommended path is **GitHub Codespaces**, which comes pre-configured with all the tooling below. The following is what you need if you prefer to run the hackathon **locally** on your own **Windows** or **Mac** workstation.
+
+### Core tools
+
+| Tool | Required | Notes |
+|------|----------|-------|
+| **Git** | ✅ | Clone the repo and run the `.sh` scripts. **Windows:** install [Git for Windows](https://git-scm.com/download/win) and run all `.sh` scripts via **Git Bash** (not WSL). **Mac:** use the built-in terminal. |
+| **Azure CLI (`az`)** | ✅ | Used by `get-keys.sh` and `deploy-to-azure.sh`. Sign in with `az login` (or `az login --use-device-code`). [Install guide](https://learn.microsoft.com/cli/azure/install-azure-cli). |
+| → `containerapp` extension | ✅ (Ch. 4) | `az extension add --name containerapp` |
+| **Python 3.11** | ✅ | Matches the container base image (`python:3.11-slim`). Use a virtual environment: `python -m venv .venv`. |
+| **pip** | ✅ | Bundled with Python; installs the dependencies below. |
+| **VS Code** | ✅ | Editor, Jupyter notebooks, and MCP client. |
+
+### VS Code extensions
+
+- **Python** — run/debug Python and select the interpreter.
+- **Jupyter** — required for the Challenge 1 notebooks.
+- **GitHub Copilot** *(optional, recommended)* — usable as an MCP client in Challenge 4.
+- **Azure Tools** *(optional)* — convenience for browsing Azure resources.
+
+### Python packages (install per challenge)
+
+```bash
+# Repo root — note the --pre flag (needed for the agent-framework-* preview packages)
+pip install --pre -r requirements.txt
+
+# Challenge 4 (REST API / container)
+pip install -r challenge-4/requirements.txt
+
+# Challenge 5 (Streamlit UI)
+pip install -r challenge-5/requirements.txt
+```
+
+### Not required
+
+- **Docker Desktop** — Challenge 4 builds the image server-side with `az acr build`, so no local Docker daemon is needed.
+- **WSL** — on Windows, use **Git Bash** to run `.sh` scripts.
+- **Node.js** / **jq** — not used by any challenge.
+
+### Configuration
+
+Generate the repo-root `.env` file:
+
+```bash
+cd challenge-0 && ./get-keys.sh --resource-group YOUR_RESOURCE_GROUP
+```
+
+### Verify your setup
+
+```bash
+git --version
+az version
+python --version            # should be 3.11.x
+az account show             # confirms login + correct subscription
+az extension show -n containerapp
+```
+
+
 ## Challenges
 
 - **Challenge 00**: **[Environment Setup & Azure Resource Deployment](challenge-0/README.md)**: Fork the repository, set up GitHub Codespaces development environment, deploy Azure resources (Microsoft Foundry, Azure AI Search, Blob Storage), configure environment variables with automated scripts, and verify your setup for the hackathon

@@ -21,8 +21,8 @@
     }
   },
   "variables": {
-    "prefix": "msagthack",
-    "suffix": "[uniqueString(resourceGroup().id)]",
+    "prefix": "ekedads",
+    "suffix": "trg",
     "storageAccountName": "[replace(format('{0}-sa-{1}', variables('prefix'), variables('suffix')), '-', '')]",
     "logAnalyticsWorkspaceName": "[format('{0}-loganalytics-{1}', variables('prefix'), variables('suffix'))]",
     "searchServiceName": "[format('{0}-search-{1}', variables('prefix'), variables('suffix'))]",
@@ -114,7 +114,7 @@
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
       "sku": {
-        "name": "basic"
+        "name": "standard"
       },
       "properties": {
         "hostingMode": "default",
@@ -129,7 +129,7 @@
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
       "sku": {
-        "name": "Basic"
+        "name": "Standard"
       },
       "properties": {
         "adminUserEnabled": true
