@@ -137,50 +137,9 @@ python test_api_client.py
 ./test_e2e.sh
 ```
 
-### Task 3: Build and Test Docker Container
+### Task 3: Deploy to Azure Container Apps
 
-#### 3.1 Review the Dockerfile
-
-Open and review [`Dockerfile`](Dockerfile):
-
-**Key aspects**:
-- Uses Python 3.11 slim base image
-- Installs dependencies from `requirements.txt`
-- Copies application files and OCR agent scripts
-- Exposes port 8080
-- Runs `api_server.py` as the entrypoint
-
-#### 3.2 Build the Docker Image
-
-```bash
-# Build the Docker image from workspace root
-cd /workspaces/claims-processing-hack
-docker build -f challenge-4/Dockerfile -t claims-processing-api:latest .
-```
-
-#### 3.3 Test Locally with Docker
-
-```bash
-# Load environment variables (from workspace root)
-cd /workspaces/claims-processing-hack
-source .env
-
-# Run the container
-docker run -p 8080:8080 \
-  -e AI_FOUNDRY_PROJECT_ENDPOINT="$AI_FOUNDRY_PROJECT_ENDPOINT" \
-  -e MODEL_DEPLOYMENT_NAME="$MODEL_DEPLOYMENT_NAME" \
-  -e MISTRAL_DOCUMENT_AI_ENDPOINT="$MISTRAL_DOCUMENT_AI_ENDPOINT" \
-  -e MISTRAL_DOCUMENT_AI_KEY="$MISTRAL_DOCUMENT_AI_KEY" \
-  -e MISTRAL_DOCUMENT_AI_DEPLOYMENT_NAME="$MISTRAL_DOCUMENT_AI_DEPLOYMENT_NAME" \
-  claims-processing-api:latest
-
-# Test in another terminal
-curl http://localhost:8080/health
-```
-
-### Task 4: Deploy to Azure Container Apps
-
-#### 4.1 Review the Deployment Script
+#### 3.1 Review the Deployment Script
 
 Open and review [`deploy-to-azure.sh`](deploy-to-azure.sh):
 
@@ -198,7 +157,7 @@ Open and review [`deploy-to-azure.sh`](deploy-to-azure.sh):
 7. Assigns Cognitive Services User role
 8. Displays the application URL
 
-#### 4.2 Deploy Using the Script
+#### 3.2 Deploy Using the Script
 
 ```bash
 # Navigate to challenge-4 directory
@@ -211,9 +170,9 @@ chmod +x deploy-to-azure.sh
 ./deploy-to-azure.sh
 ```
 
-### Task 5: Test the Deployed API
+### Task 4: Test the Deployed API
 
-#### 5.1 Get Your API URL
+#### 4.1 Get Your API URL
 
 ```bash
 # Get the application URL
@@ -226,7 +185,7 @@ APP_URL=$(az containerapp show \
 echo "API URL: https://$APP_URL"
 ```
 
-#### 5.2 Test with curl
+#### 4.2 Test with curl
 
 ```bash
 # Test health endpoint
@@ -239,12 +198,12 @@ curl -X POST https://$APP_URL/process-claim/upload \
 ```
 
 
-### Task 6: Test Your API in Azure API Management (APIM)
+### Task 5: Test Your API in Azure API Management (APIM)
 
 In this task, we'll use our existing API (already deployed to Azure Container Apps) and expose it through Azure API Management to add enterprise-grade features like rate limiting, authentication, and monitoring. After testing the APIM endpoint, we'll expose it as an MCP (Model Context Protocol) server, which allows AI assistants like GitHub Copilot, Claude, or ChatGPT to use your claims processing workflow as a tool. This means AI agents can automatically process insurance claims by simply calling your API, making your workflow accessible to any MCP-compatible AI system.
 
 
-#### 6.1 Add Your Container App API to APIM
+#### 5.1 Add Your Container App API to APIM
 
 In this step, you'll import your Container App API into Azure API Management. This creates a managed gateway in front of your API, enabling features like subscription keys, rate limiting, caching, and centralized monitoring.
 
@@ -261,7 +220,7 @@ In this step, you'll import your Container App API into Azure API Management. Th
 
 Once added, APIM acts as a reverse proxy, forwarding requests to your Container App while applying policies, authentication, and rate limiting.
 
-#### 6.2 Configure APIM Policy for the Upload Operation
+#### 5.2 Configure APIM Policy for the Upload Operation
 
 The API server now accepts **raw binary uploads** (`application/octet-stream`) in addition to the standard multipart form-data format. This means the APIM inbound policy no longer needs to read or rewrite the request body, which previously caused MCP `tools/list` to time out (body access triggers response buffering that breaks MCP streaming).
 
@@ -301,7 +260,7 @@ The API server now accepts **raw binary uploads** (`application/octet-stream`) i
 
 This policy routes the request to the correct backend and strips the internal subscription-key header without touching the request body. The FastAPI server handles both raw binary and multipart form-data transparently.
 
-#### 6.3 Test in APIM Console
+#### 5.3 Test in APIM Console
 
 1. Download an image file to test (challenge-0/data/statements)
 2. Go to the **Test** tab for the `/process-claim/upload` operation
@@ -315,7 +274,7 @@ This policy routes the request to the correct backend and strips the internal su
 If you scroll all the way down, you will receive a JSON response with the structured claim data!
 
 
-## 6.4 Expose API as an MCP Server
+## 5.4 Expose API as an MCP Server
 
 Now let's expose the API we have just created as an MCP Server. 
 

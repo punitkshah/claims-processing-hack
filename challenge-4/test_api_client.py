@@ -60,8 +60,11 @@ async def main():
     
     print("\n" + "=" * 60)
     
-    # Get test image path
-    test_image = "/workspaces/claims-processing-hack/challenge-0/data/statements/crash1_front.jpeg"
+    # Get test image path (resolved relative to this script so it works on any OS)
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    test_image = os.path.join(
+        repo_root, "challenge-0", "data", "statements", "crash1_front.jpeg"
+    )
     
     if not os.path.exists(test_image):
         print(f"❌ Test image not found: {test_image}")

@@ -9,8 +9,12 @@ echo "║     Claims Processing API - End-to-End Test              ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo ""
 
+# Resolve repo root relative to this script so paths work from any CWD
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
 # Test image path
-TEST_IMAGE="../challenge-0/data/statements/crash1_front.jpeg"
+TEST_IMAGE="$REPO_ROOT/challenge-0/data/statements/crash1_front.jpeg"
 
 if [ ! -f "$TEST_IMAGE" ]; then
     echo "❌ Test image not found: $TEST_IMAGE"
@@ -30,12 +34,10 @@ test_api() {
     echo ""
     echo "1️⃣ Testing health endpoint..."
     HEALTH_RESPONSE=$(curl -s "$API_URL/health")
-    HEALTH_STATUS=$(echo $HEALTH_RESPONSE | jq -r '.status' 2>/dev/null || echo "error")
     
-    if [ "$HEALTH_STATUS" = "healthy" ]; then
+    if echo "$HEALTH_RESPONSE" | grep -q '"status"[[:space:]]*:[[:space:]]*"healthy"'; then
         echo "   ✅ Health check passed"
-        echo "   Response: $HEALTH_RESPONSE" | head -c 100
-        echo "..."
+        echo "   Response: $(echo "$HEALTH_RESPONSE" | head -c 100)..."
     else
         echo "   ❌ Health check failed"
         echo "   Response: $HEALTH_RESPONSE"
@@ -55,30 +57,33 @@ test_api() {
     RESPONSE_BODY=$(echo "$CLAIM_RESPONSE" | head -n -1)
     
     if [ "$HTTP_CODE" = "200" ]; then
-        SUCCESS=$(echo $RESPONSE_BODY | jq -r '.success' 2>/dev/null || echo "false")
-        
-        if [ "$SUCCESS" = "true" ]; then
+        if echo "$RESPONSE_BODY" | grep -q '"success"[[:space:]]*:[[:space:]]*true'; then
             echo "   ✅ Claim processing succeeded"
             
             # Extract key information
-            OCR_CHARS=$(echo $RESPONSE_BODY | jq -r '.data.metadata.ocr_characters' 2>/dev/null || echo "unknown")
+            OCR_CHARS=$(echo "$RESPONSE_BODY" | grep -o '"ocr_characters"[[:space:]]*:[[:space:]]*[0-9]*' | head -1 | grep -o '[0-9]*$' || true)
+            [ -z "$OCR_CHARS" ] && OCR_CHARS="unknown"
             echo "   📊 OCR characters extracted: $OCR_CHARS"
             
             # Check for vehicle info
-            if echo $RESPONSE_BODY | jq -e '.data.vehicle_info' > /dev/null 2>&1; then
-                echo "   🚗 Vehicle info detected:"
-                echo $RESPONSE_BODY | jq '.data.vehicle_info' 2>/dev/null | sed 's/^/      /'
+            if echo "$RESPONSE_BODY" | grep -q '"vehicle_info"'; then
+                echo "   🚗 Vehicle info detected"
             fi
             
-            # Save full response
+            # Save full response (pretty-print via python if available, else raw)
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             OUTPUT_FILE="test_result_${TIMESTAMP}.json"
-            echo $RESPONSE_BODY | jq '.' > "$OUTPUT_FILE" 2>/dev/null
+            if command -v python3 >/dev/null 2>&1; then
+                echo "$RESPONSE_BODY" | python3 -m json.tool > "$OUTPUT_FILE" 2>/dev/null || echo "$RESPONSE_BODY" > "$OUTPUT_FILE"
+            else
+                echo "$RESPONSE_BODY" > "$OUTPUT_FILE"
+            fi
             echo "   💾 Full response saved to: $OUTPUT_FILE"
             
         else
             echo "   ❌ Claim processing failed"
-            ERROR=$(echo $RESPONSE_BODY | jq -r '.error' 2>/dev/null || echo "unknown")
+            ERROR=$(echo "$RESPONSE_BODY" | grep -o '"error"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"$/\1/' || true)
+            [ -z "$ERROR" ] && ERROR="unknown"
             echo "   Error: $ERROR"
             return 1
         fi
