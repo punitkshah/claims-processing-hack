@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 # Azure AI Foundry SDK
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import PromptAgentDefinition
-from azure.identity import DefaultAzureCredential
+from azure.identity import InteractiveBrowserCredential, TokenCachePersistenceOptions
 
 # Load environment variables
 load_dotenv(override=True)
@@ -34,6 +34,22 @@ logger = logging.getLogger(__name__)
 project_endpoint = os.environ.get("AI_FOUNDRY_PROJECT_ENDPOINT")
 # Use GPT-4o-mini for this agent
 model_deployment_name = os.environ.get("MODEL_DEPLOYMENT_NAME", "gpt-4o-mini")
+# Optional: restrict sign-in to a specific tenant (recommended for multi-tenant accounts)
+tenant_id = os.environ.get("AZURE_TENANT_ID")
+
+
+def get_credential() -> InteractiveBrowserCredential:
+    """
+    Create an interactive browser credential (no Azure CLI required).
+
+    On first use this opens the system browser to sign in with your Entra ID
+    account. The token is cached to disk so subsequent runs reuse it silently
+    until it expires.
+    """
+    return InteractiveBrowserCredential(
+        tenant_id=tenant_id,  # ignored if None (uses your home/default tenant)
+        cache_persistence_options=TokenCachePersistenceOptions(name="claims_proc_cache"),
+    )
 
 
 def get_agent_instructions() -> str:
@@ -118,7 +134,7 @@ def structure_ocr_to_json(ocr_text: str, source_file: str = None, project_client
             logger.info("Creating AI Project Client...")
             project_client = AIProjectClient(
                 endpoint=project_endpoint,
-                credential=DefaultAzureCredential(),
+                credential=get_credential(),
             )
             should_close_client = True
         
@@ -284,7 +300,7 @@ def main():
         # Create AI Project Client
         project_client = AIProjectClient(
             endpoint=project_endpoint,
-            credential=DefaultAzureCredential(),
+            credential=get_credential(),
         )
         
         with project_client:

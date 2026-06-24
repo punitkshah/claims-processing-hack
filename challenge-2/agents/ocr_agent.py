@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 # Azure AI Foundry SDK
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import PromptAgentDefinition, FunctionTool
-from azure.identity import DefaultAzureCredential
+from azure.identity import InteractiveBrowserCredential, TokenCachePersistenceOptions
 from openai.types.responses.response_input_param import FunctionCallOutput
 
 # Load environment variables
@@ -34,6 +34,22 @@ logger = logging.getLogger(__name__)
 # Configuration
 project_endpoint = os.environ.get("AI_FOUNDRY_PROJECT_ENDPOINT")
 model_deployment_name = os.environ.get("MODEL_DEPLOYMENT_NAME")
+# Optional: restrict sign-in to a specific tenant (recommended for multi-tenant accounts)
+tenant_id = os.environ.get("AZURE_TENANT_ID")
+
+
+def get_credential() -> InteractiveBrowserCredential:
+    """
+    Create an interactive browser credential (no Azure CLI required).
+
+    On first use this opens the system browser to sign in with your Entra ID
+    account. The token is cached to disk so subsequent runs reuse it silently
+    until it expires.
+    """
+    return InteractiveBrowserCredential(
+        tenant_id=tenant_id,  # ignored if None (uses your home/default tenant)
+        cache_persistence_options=TokenCachePersistenceOptions(name="claims_proc_cache"),
+    )
 
 
 def encode_file_to_base64(file_path: str) -> tuple[str, str]:
@@ -238,7 +254,7 @@ def main():
         # Create AI Project Client
         project_client = AIProjectClient(
             endpoint=project_endpoint,
-            credential=DefaultAzureCredential(),
+            credential=get_credential(),
         )
         
         with project_client:
